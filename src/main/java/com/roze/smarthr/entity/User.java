@@ -33,7 +33,7 @@ public class User implements UserDetails, Principal {
 
     @Override
     public String getName() {
-        return null;
+        return username;
     }
 
     @Override
