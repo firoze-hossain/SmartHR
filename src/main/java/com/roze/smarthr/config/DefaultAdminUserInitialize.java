@@ -6,6 +6,7 @@ import com.roze.smarthr.repository.RoleRepository;
 import com.roze.smarthr.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class DefaultAdminUserInitialize {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     @Transactional
@@ -31,7 +33,7 @@ public class DefaultAdminUserInitialize {
             User user = new User();
             user.setEmail(email);
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
             user.setEnabled(enabled);
             user.setRoles(List.of(role));
             userRepository.save(user);
