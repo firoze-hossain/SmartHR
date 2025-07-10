@@ -3,6 +3,7 @@ package com.roze.smarthr.service.implementation;
 import com.roze.smarthr.dto.AuthenticationRequest;
 import com.roze.smarthr.dto.AuthenticationResponse;
 import com.roze.smarthr.dto.RegisterRequest;
+import com.roze.smarthr.dto.RegisterResponse;
 import com.roze.smarthr.entity.User;
 import com.roze.smarthr.exception.DuplicateResourceException;
 import com.roze.smarthr.mapper.UserMapper;
@@ -21,7 +22,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthenticationResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new DuplicateResourceException("This email:\"" + request.getEmail() + "\" already associated with other user ");
         }
@@ -30,7 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         User user = userMapper.toEntity(request);
         User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+        return userMapper.registerResponse(savedUser);
 
     }
 

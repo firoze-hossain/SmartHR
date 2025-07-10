@@ -2,6 +2,7 @@ package com.roze.smarthr.mapper;
 
 import com.roze.smarthr.dto.AuthenticationResponse;
 import com.roze.smarthr.dto.RegisterRequest;
+import com.roze.smarthr.dto.RegisterResponse;
 import com.roze.smarthr.entity.Role;
 import com.roze.smarthr.entity.User;
 import com.roze.smarthr.exception.ResourceNotFoundException;
@@ -40,6 +41,16 @@ public class UserMapper {
         AuthenticationResponse response = AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+        return response;
+    }
+
+    public RegisterResponse registerResponse(User user) {
+        RegisterResponse response = new RegisterResponse();
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setEnabled(user.getEnabled());
+        response.setRoles(user.getRoles().stream().map(Role::getTitle).toList());
+        response.setUsername(user.getUsername());
         return response;
     }
 }
