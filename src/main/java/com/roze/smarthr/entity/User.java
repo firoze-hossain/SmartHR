@@ -23,10 +23,13 @@ public class User implements UserDetails, Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String username;
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
-    private Boolean enabled;
+    private Boolean enabled = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
