@@ -1,5 +1,6 @@
 package com.roze.smarthr.entity;
 
+import com.roze.smarthr.enums.LeaveStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,4 @@ public class LeaveRequest {
     @Column(nullable = false)
     private LeaveStatus status = LeaveStatus.PENDING;
 
-    public enum LeaveStatus {
-        PENDING, APPROVED, REJECTED
-    }
 }
