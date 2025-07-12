@@ -30,6 +30,7 @@ public class UserMapper {
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
+                .enabled(true)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(roleEntities)
                 .build();

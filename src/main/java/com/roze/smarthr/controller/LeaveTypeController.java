@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/leave-types")
+@RequestMapping("/leave_types")
 @RequiredArgsConstructor
 public class LeaveTypeController {
     private final LeaveTypeService leaveTypeService;

@@ -13,7 +13,7 @@ public class EmployeeLeaveBalanceMapper {
                 .totalQuota(balance.getTotalQuota())
                 .used(balance.getUsed())
                 .carriedForward(balance.getCarriedForward())
-                .available(balance.getAvailable())
+                //.available(balance.getAvailable())
                 .build();
     }
 }

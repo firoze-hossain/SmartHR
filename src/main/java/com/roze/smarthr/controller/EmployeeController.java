@@ -1,6 +1,7 @@
 package com.roze.smarthr.controller;
 
 import com.roze.smarthr.constant.GlobalMessage;
+import com.roze.smarthr.dto.AssignLeaveBalancesRequest;
 import com.roze.smarthr.dto.BaseResponse;
 import com.roze.smarthr.dto.EmployeeRequest;
 import com.roze.smarthr.dto.EmployeeResponse;
@@ -72,4 +73,17 @@ public class EmployeeController {
                 null
         ));
     }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'HR')")
+    @PostMapping("/assign_leave_balances")
+    public ResponseEntity<BaseResponse<EmployeeResponse>> assignLeaveBalances(
+            @Valid @RequestBody AssignLeaveBalancesRequest request) {
+        EmployeeResponse response = employeeService.assignLeaveBalances(request);
+        return ResponseEntity.ok(new BaseResponse<>(
+                true,
+                "Leave balances assigned successfully",
+                response
+        ));
+    }
+
 }

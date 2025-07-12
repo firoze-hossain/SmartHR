@@ -15,6 +15,9 @@ public class EmployeeLeaveBalanceDto {
     private Integer totalQuota;
     private Integer used;
     private Integer carriedForward;
-    private Integer available;
+   // private Integer available;
+   public Integer getAvailable() {
+       return totalQuota - used + carriedForward;
+   }
 }
 

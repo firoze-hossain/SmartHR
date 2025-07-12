@@ -16,6 +16,7 @@ import com.roze.smarthr.service.EmployeeLeaveBalanceService;
 import com.roze.smarthr.service.LeaveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +32,7 @@ public class LeaveServiceImpl implements LeaveService {
     private final EmployeeLeaveBalanceService leaveBalanceService;
 
     @Override
+    @Transactional
     public LeaveResponseDto applyForLeave(LeaveRequestDto request, User user) {
         validateLeaveDates(request);
 
@@ -46,7 +48,7 @@ public class LeaveServiceImpl implements LeaveService {
         LeaveRequest leaveRequest = leaveMapper.toEntity(request, employee);
         leaveRequest.setLeaveType(leaveType);
         LeaveRequest savedLeave = leaveRequestRepository.save(leaveRequest);
-        updateLeaveBalance(employee, leaveType, request.getFromDate(), request.getToDate());
+        // updateLeaveBalance(employee, leaveType, request.getFromDate(), request.getToDate());
         return leaveMapper.toDto(savedLeave);
     }
 
@@ -70,12 +72,34 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
+    @Transactional
     public LeaveResponseDto updateLeaveStatus(Long leaveId, LeaveStatusUpdateDto statusUpdate) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request not found"));
 
-        if (leaveRequest.getStatus() != LeaveStatus.PENDING) {
-            throw new IllegalArgumentException("Only pending leaves can be updated");
+        // Only process status changes
+        if (leaveRequest.getStatus() == statusUpdate.getStatus()) {
+            return leaveMapper.toDto(leaveRequest);
+        }
+
+        // Handle status transition
+        if (statusUpdate.getStatus() == LeaveStatus.APPROVED) {
+            // Only deduct if transitioning to APPROVED
+            int days = calculateWorkingDays(leaveRequest.getFromDate(), leaveRequest.getToDate());
+            leaveBalanceRepository.incrementUsedDays(
+                    leaveRequest.getEmployee().getId(),
+                    leaveRequest.getLeaveType().getId(),
+                    days
+            );
+        } else if (leaveRequest.getStatus() == LeaveStatus.APPROVED &&
+                statusUpdate.getStatus() == LeaveStatus.REJECTED) {
+            // Return days if rejecting an approved leave
+            int days = calculateWorkingDays(leaveRequest.getFromDate(), leaveRequest.getToDate());
+            leaveBalanceRepository.decrementUsedDays(
+                    leaveRequest.getEmployee().getId(),
+                    leaveRequest.getLeaveType().getId(),
+                    days
+            );
         }
 
         leaveRequest.setStatus(statusUpdate.getStatus());
