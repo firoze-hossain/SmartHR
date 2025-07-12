@@ -20,4 +20,6 @@ public class LeaveResponseDto {
     private LocalDate toDate;
     private String reason;
     private LeaveStatus status;
+    private Long leaveTypeId;
+    private String leaveTypeName;
 }

@@ -1,6 +1,7 @@
 package com.roze.smarthr.exception.handler;
 
 import com.roze.smarthr.exception.DuplicateResourceException;
+import com.roze.smarthr.exception.LeaveException;
 import com.roze.smarthr.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,20 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation failed",
                 errorMessages);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LeaveException.class)
+    public ResponseEntity<ErrorResponse> handleLeaveException(
+            LeaveException ex,
+            WebRequest request) {
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

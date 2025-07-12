@@ -1,21 +1,18 @@
 package com.roze.smarthr.entity;
 
-import com.roze.smarthr.enums.LeaveStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @Entity
-@Table(name = "leave_requests")
+@Table(name = "employee_leave_balances")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LeaveRequest {
+public class EmployeeLeaveBalance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,21 +21,22 @@ public class LeaveRequest {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @Column(nullable = false)
-    private LocalDate fromDate;
-
-    @Column(nullable = false)
-    private LocalDate toDate;
-
-    @Column(nullable = false)
-    private String reason;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LeaveStatus status = LeaveStatus.PENDING;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leave_type_id", nullable = false)
     private LeaveType leaveType;
 
+    @Column(nullable = false)
+    private int totalQuota;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int used = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int carriedForward = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int available = 0; // derived: totalQuota - used + carriedForward
 }

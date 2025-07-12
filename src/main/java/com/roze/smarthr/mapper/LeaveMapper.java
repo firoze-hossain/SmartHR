@@ -28,6 +28,8 @@ public class LeaveMapper {
                 .toDate(leaveRequest.getToDate())
                 .reason(leaveRequest.getReason())
                 .status(leaveRequest.getStatus())
+                .leaveTypeId(leaveRequest.getLeaveType().getId())
+                .leaveTypeName(leaveRequest.getLeaveType().getName())
                 .build();
     }
 }

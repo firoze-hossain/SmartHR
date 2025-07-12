@@ -25,4 +25,7 @@ public class LeaveRequestDto {
 
     @NotBlank(message = "Reason cannot be blank")
     private String reason;
+
+    @NotNull(message = "Leave type ID cannot be null")
+    private Long leaveTypeId;
 }
