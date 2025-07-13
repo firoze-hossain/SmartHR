@@ -20,13 +20,14 @@ public class EmployeeMapper {
     public Employee toEntity(EmployeeRequest request) {
         Department department = departmentRepository.findById(request.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + request.getDepartmentId()));
-        
+
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getUserId()));
 
         return Employee.builder()
                 .name(request.getName())
                 .joiningDate(request.getJoiningDate())
+                .birthDate(request.getBirthDate())
                 .designation(request.getDesignation())
                 .department(department)
                 .user(user)
@@ -38,6 +39,7 @@ public class EmployeeMapper {
                 .id(employee.getId())
                 .name(employee.getName())
                 .joiningDate(employee.getJoiningDate())
+                .birthDate(employee.getBirthDate())
                 .designation(employee.getDesignation())
                 .departmentId(employee.getDepartment().getId())
                 .departmentName(employee.getDepartment().getTitle())

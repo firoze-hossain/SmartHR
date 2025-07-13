@@ -16,16 +16,18 @@ import java.time.LocalDate;
 public class EmployeeRequest {
     @NotBlank(message = "Name cannot be blank")
     private String name;
-    
+
     @NotNull(message = "Joining date cannot be null")
     private LocalDate joiningDate;
-    
+
+    private LocalDate birthDate;
+
     @NotBlank(message = "Designation cannot be blank")
     private String designation;
-    
+
     @NotNull(message = "Department ID cannot be null")
     private Long departmentId;
-    
+
     @NotNull(message = "User ID cannot be null")
     private Long userId;
 }

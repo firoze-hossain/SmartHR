@@ -15,6 +15,7 @@ public class EmployeeResponse {
     private Long id;
     private String name;
     private LocalDate joiningDate;
+    private LocalDate birthDate;
     private String designation;
     private Long departmentId;
     private String departmentName;

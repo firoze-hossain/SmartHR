@@ -11,13 +11,15 @@ import java.util.Optional;
 
 public interface RosterAssignmentRepository extends JpaRepository<RosterAssignment, Long> {
     List<RosterAssignment> findByEmployeeAndAssignmentDateBetween(Employee employee, LocalDate startDate, LocalDate endDate);
-    
+
     @Query("SELECT ra FROM RosterAssignment ra " +
-           "WHERE ra.employee.department.id = :departmentId " +
-           "AND ra.assignmentDate BETWEEN :startDate AND :endDate")
+            "WHERE ra.employee.department.id = :departmentId " +
+            "AND ra.assignmentDate BETWEEN :startDate AND :endDate")
     List<RosterAssignment> findByDepartmentAndDateRange(Long departmentId, LocalDate startDate, LocalDate endDate);
-    
+
     boolean existsByEmployeeIdAndAssignmentDate(Long employeeId, LocalDate date);
 
-   Optional<RosterAssignment> findByEmployeeIdAndAssignmentDate(Long employeeId, LocalDate date);
+    Optional<RosterAssignment> findByEmployeeIdAndAssignmentDate(Long employeeId, LocalDate date);
+
+    Optional<RosterAssignment> findByEmployeeAndAssignmentDate(Employee employee, LocalDate date);
 }

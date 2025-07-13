@@ -115,6 +115,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity<ErrorResponse> handleNotificationException(
+            NotificationException ex,
+            WebRequest request) {
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     public static class ErrorResponse {
         private LocalDateTime timestamp;
         private int status;

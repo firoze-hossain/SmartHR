@@ -28,4 +28,10 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
     int countByMonth(@Param("month") int month);
 
     int countByStatus(LeaveStatus status);
+
+    List<LeaveRequest> findByStatusOrderByFromDateAsc(LeaveStatus status);
+
+    List<LeaveRequest> findByStatusAndFromDate(LeaveStatus status, LocalDate fromDate);
+
+    long countByEmployeeAndStatusAndFromDateBetween(Employee employee, LeaveStatus status, LocalDate start, LocalDate end);
 }
