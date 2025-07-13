@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Payslip</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .company-name { font-size: 20px; font-weight: bold; }
+        .payslip-title { font-size: 18px; margin: 10px 0; }
+        .employee-info { margin-bottom: 20px; }
+        .details { width: 100%; border-collapse: collapse; }
+        .details th, .details td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        .details th { background-color: #f2f2f2; }
+        .total { font-weight: bold; }
+        .footer { margin-top: 30px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="company-name" th:text="${company}">Company Name</div>
+    <div class="payslip-title">PAYSLIP</div>
+</div>
+
+<div class="employee-info">
+    <div><strong>Employee Name:</strong> <span th:text="${payroll.employee.name}"></span></div>
+    <div><strong>Designation:</strong> <span th:text="${payroll.employee.designation}"></span></div>
+    <div><strong>Period:</strong> <span th:text="${payroll.payPeriod}"></span></div>
+</div>
+
+<table class="details">
+    <tr>
+        <th>Earnings</th>
+        <th>Amount</th>
+    </tr>
+    <tr>
+        <td>Basic Salary</td>
+        <td th:text="${#numbers.formatDecimal(payroll.grossSalary, 1, 2)}"></td>
+    </tr>
+    <tr class="total">
+        <td>Gross Salary</td>
+        <td th:text="${#numbers.formatDecimal(payroll.grossSalary, 1, 2)}"></td>
+    </tr>
+
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr>
+        <th>Deductions</th>
+        <th>Amount</th>
+    </tr>
+    <tr>
+        <td>Loss of Pay (LOP)</td>
+        <td th:text="${#numbers.formatDecimal(payroll.lopAmount, 1, 2)}"></td>
+    </tr>
+    <tr class="total">
+        <td>Total Deductions</td>
+        <td th:text="${#numbers.formatDecimal(payroll.lopAmount, 1, 2)}"></td>
+    </tr>
+
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr class="total">
+        <td>Net Payable</td>
+        <td th:text="${#numbers.formatDecimal(payroll.netPayable, 1, 2)}"></td>
+    </tr>
+</table>
+
+<div class="footer">
+    <div>Generated on: <span th:text="${#temporals.format(payroll.generatedAt, 'dd MMM yyyy HH:mm')}"></span></div>
+    <div th:if="${payroll.finalized}">Approved by: HR Department</div>
+</div>
+</body>
+</html>

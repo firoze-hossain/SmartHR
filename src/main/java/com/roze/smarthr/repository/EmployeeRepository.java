@@ -22,4 +22,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     @Query("SELECT e FROM Employee e JOIN RosterAssignment ra ON e.id = ra.employee.id " +
             "WHERE ra.assignmentDate = :date AND ra.isDayOff = false")
     List<Employee> findEmployeesWithShiftOnDate(@Param("date") LocalDate date);
+
+    @Query("SELECT e FROM Employee e WHERE e.user.enabled = true")
+    List<Employee> findActiveEmployees();
 }

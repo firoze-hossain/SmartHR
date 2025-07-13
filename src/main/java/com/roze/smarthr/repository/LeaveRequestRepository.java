@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long>, JpaSpecificationExecutor<LeaveRequest> {
@@ -34,4 +35,18 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
     List<LeaveRequest> findByStatusAndFromDate(LeaveStatus status, LocalDate fromDate);
 
     long countByEmployeeAndStatusAndFromDateBetween(Employee employee, LeaveStatus status, LocalDate start, LocalDate end);
+
+    @Query("SELECT COALESCE(SUM(EXTRACT(DAY FROM l.toDate) - EXTRACT(DAY FROM l.fromDate) + 1), 0) " +
+            "FROM LeaveRequest l " +
+            "WHERE l.employee.id = :employeeId " +
+            "AND EXTRACT(YEAR FROM l.fromDate) = :year " +
+            "AND EXTRACT(MONTH FROM l.fromDate) = :month " +
+            "AND l.status = 'APPROVED'")
+    int countApprovedLeaveDays(@Param("employeeId") Long employeeId,
+                               @Param("year") int year,
+                               @Param("month") int month);
+
+    default int countApprovedLeaveDays(Long employeeId, YearMonth month) {
+        return countApprovedLeaveDays(employeeId, month.getYear(), month.getMonthValue());
+    }
 }
