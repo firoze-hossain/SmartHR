@@ -1,8 +1,6 @@
 package com.roze.smarthr.exception.handler;
 
-import com.roze.smarthr.exception.DuplicateResourceException;
-import com.roze.smarthr.exception.LeaveException;
-import com.roze.smarthr.exception.ResourceNotFoundException;
+import com.roze.smarthr.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,6 +86,32 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 null);
 
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AttendanceException.class)
+    public ResponseEntity<ErrorResponse> handleAttendanceException(
+            AttendanceException ex,
+            WebRequest request) {
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),  // or another appropriate status code
+                ex.getMessage(),
+                null);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ShiftException.class)
+    public ResponseEntity<ErrorResponse> handleShiftException(
+            ShiftException ex,
+            WebRequest request) {
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

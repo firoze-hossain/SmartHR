@@ -7,15 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "attendances")
+@Table(name = "roster_assignments")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Attendance {
+public class RosterAssignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,22 +23,13 @@ public class Attendance {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
     
-    @Column(nullable = false)
-    private LocalDate date;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shift_template_id", nullable = false)
+    private ShiftTemplate shiftTemplate;
     
     @Column(nullable = false)
-    private LocalDateTime checkIn;
-    
-    private LocalDateTime checkOut;
+    private LocalDate assignmentDate;
     
     @Column(nullable = false)
-    private boolean present = true;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean late = false;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean earlyExit = false;
+    private boolean isDayOff = false;
 }

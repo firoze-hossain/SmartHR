@@ -5,6 +5,7 @@ import com.roze.smarthr.dto.AttendanceResponse;
 import com.roze.smarthr.entity.Attendance;
 import com.roze.smarthr.entity.Employee;
 import com.roze.smarthr.entity.User;
+import com.roze.smarthr.exception.AttendanceException;
 import com.roze.smarthr.exception.ResourceNotFoundException;
 import com.roze.smarthr.mapper.AttendanceMapper;
 import com.roze.smarthr.repository.AttendanceRepository;
@@ -28,7 +29,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         Employee employee = employeeRepository.findByUser(user)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found for user"));
         if (attendanceRepository.existsByEmployeeAndDate(employee, LocalDate.now())) {
-            throw new IllegalArgumentException("You have already checked in today");
+            throw new AttendanceException("You have already checked in today");
         }
 
         AttendanceRequest request = new AttendanceRequest();
@@ -46,10 +47,10 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found for user"));
 
         Attendance attendance = attendanceRepository.findByEmployeeAndDate(employee, LocalDate.now())
-                .orElseThrow(() -> new IllegalArgumentException("You need to check in first"));
+                .orElseThrow(() -> new AttendanceException("You need to check in first"));
 
         if (attendance.getCheckOut() != null) {
-            throw new IllegalArgumentException("You have already checked out today");
+            throw new AttendanceException("You have already checked out today");
         }
 
         Attendance updatedAttendance = attendanceMapper.toCheckOutEntity(attendance);
@@ -85,7 +86,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + request.getEmployeeId()));
 
         if (attendanceRepository.existsByEmployeeAndDate(employee, request.getDate())) {
-            throw new IllegalArgumentException("Attendance already exists for this employee on " + request.getDate());
+            throw new AttendanceException("Attendance already exists for this employee on " + request.getDate());
         }
 
         Attendance attendance = Attendance.builder()
