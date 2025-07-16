@@ -1,11 +1,13 @@
-// TrainingMapper.java
+
 package com.roze.smarthr.mapper;
 
 import com.roze.smarthr.dto.DepartmentResponse;
+import com.roze.smarthr.dto.TrainingProgramRequest;
 import com.roze.smarthr.dto.TrainingProgramResponse;
 import com.roze.smarthr.entity.Department;
 import com.roze.smarthr.entity.TrainingProgram;
-import com.roze.smarthr.repository.EmployeeRepository;
+import com.roze.smarthr.exception.ResourceNotFoundException;
+import com.roze.smarthr.repository.DepartmentRepository;
 import com.roze.smarthr.repository.EmployeeTrainingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,27 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TrainingMapper {
     private final EmployeeTrainingRepository employeeTrainingRepository;
-    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
+
+    public TrainingProgram toEntity(TrainingProgramRequest request) {
+        Department department = request.getDepartmentId() != null ?
+                departmentRepository.findById(request.getDepartmentId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Department not found")) :
+                null;
+
+        return TrainingProgram.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .location(request.getLocation())
+                .trainerName(request.getTrainerName())
+                .mandatory(request.isMandatory())
+                .type(request.getType())
+                .department(department)
+                .maxParticipants(request.getMaxParticipants())
+                .build();
+    }
 
     public TrainingProgramResponse toTrainingProgramResponse(TrainingProgram trainingProgram) {
         long enrolledCount = employeeTrainingRepository.countEnrollmentsByProgramId(trainingProgram.getId());

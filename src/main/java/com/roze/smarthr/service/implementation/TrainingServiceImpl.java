@@ -9,7 +9,10 @@ import com.roze.smarthr.exception.TrainingException;
 import com.roze.smarthr.mapper.EmployeeTrainingMapper;
 import com.roze.smarthr.mapper.TrainingFeedbackMapper;
 import com.roze.smarthr.mapper.TrainingMapper;
-import com.roze.smarthr.repository.*;
+import com.roze.smarthr.repository.DepartmentRepository;
+import com.roze.smarthr.repository.EmployeeTrainingRepository;
+import com.roze.smarthr.repository.TrainingFeedbackRepository;
+import com.roze.smarthr.repository.TrainingProgramRepository;
 import com.roze.smarthr.service.TrainingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,6 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingProgramRepository trainingProgramRepository;
     private final EmployeeTrainingRepository employeeTrainingRepository;
     private final TrainingFeedbackRepository trainingFeedbackRepository;
-    private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final TrainingMapper trainingMapper;
     private final EmployeeTrainingMapper employeeTrainingMapper;
@@ -34,24 +36,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Transactional
     public TrainingProgramResponse createTrainingProgram(TrainingProgramRequest request) {
-        Department department = request.getDepartmentId() != null ?
-                departmentRepository.findById(request.getDepartmentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Department not found")) :
-                null;
-
-        TrainingProgram trainingProgram = TrainingProgram.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .location(request.getLocation())
-                .trainerName(request.getTrainerName())
-                .mandatory(request.isMandatory())
-                .type(request.getType())
-                .department(department)
-                .maxParticipants(request.getMaxParticipants())
-                .build();
-
+        TrainingProgram trainingProgram = trainingMapper.toEntity(request);
         TrainingProgram savedProgram = trainingProgramRepository.save(trainingProgram);
         return trainingMapper.toTrainingProgramResponse(savedProgram);
     }
@@ -129,31 +114,23 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Transactional
     public EmployeeTrainingResponse enrollEmployee(EmployeeTrainingRequest request) {
-        Employee employee = employeeRepository.findById(request.getEmployeeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+        EmployeeTraining employeeTraining = employeeTrainingMapper.toEntity(request);
 
-        TrainingProgram trainingProgram = trainingProgramRepository.findById(request.getTrainingProgramId())
-                .orElseThrow(() -> new ResourceNotFoundException("Training program not found"));
-
-        if (!trainingProgram.isActive()) {
+        if (!employeeTraining.getTrainingProgram().isActive()) {
             throw new TrainingException("Cannot enroll in an inactive training program");
         }
 
-        if (employeeTrainingRepository.existsByEmployeeIdAndTrainingProgramId(employee.getId(), trainingProgram.getId())) {
+        if (employeeTrainingRepository.existsByEmployeeIdAndTrainingProgramId(
+                employeeTraining.getEmployee().getId(),
+                employeeTraining.getTrainingProgram().getId())) {
             throw new TrainingException("Employee is already enrolled in this training program");
         }
 
-        long currentEnrollments = employeeTrainingRepository.countByTrainingProgramId(trainingProgram.getId());
-        if (currentEnrollments >= trainingProgram.getMaxParticipants()) {
+        long currentEnrollments = employeeTrainingRepository.countByTrainingProgramId(
+                employeeTraining.getTrainingProgram().getId());
+        if (currentEnrollments >= employeeTraining.getTrainingProgram().getMaxParticipants()) {
             throw new TrainingException("Training program has reached maximum participants");
         }
-
-        EmployeeTraining employeeTraining = EmployeeTraining.builder()
-                .employee(employee)
-                .trainingProgram(trainingProgram)
-                .status(request.getStatus() != null ? request.getStatus() : TrainingStatus.ENROLLED)
-                .enrolledDate(LocalDate.now())
-                .build();
 
         EmployeeTraining savedEnrollment = employeeTrainingRepository.save(employeeTraining);
         return employeeTrainingMapper.toEmployeeTrainingResponse(savedEnrollment);
