@@ -32,6 +32,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(SettingsException.class)
+    public ResponseEntity<ErrorResponse> handleSettingsException(
+            SettingsException ex,
+            WebRequest request) {
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(TrainingException.class)
     public ResponseEntity<ErrorResponse> handleTrainingException(
             TrainingException ex,
