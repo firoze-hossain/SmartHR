@@ -5,6 +5,7 @@ import com.roze.smarthr.entity.*;
 import com.roze.smarthr.enums.LeaveStatus;
 import com.roze.smarthr.enums.NotificationPriority;
 import com.roze.smarthr.enums.NotificationType;
+import com.roze.smarthr.enums.TrainingStatus;
 import com.roze.smarthr.exception.NotificationException;
 import com.roze.smarthr.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ public class NotificationScheduler {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final AttendanceRepository attendanceRepository;
+    private final EmployeeTrainingRepository employeeTrainingRepository;
+    private final TrainingProgramRepository trainingProgramRepository;
 
     // Birthday notifications at 9 AM daily
     @Scheduled(cron = "0 0 9 * * ?")
@@ -294,5 +297,109 @@ public class NotificationScheduler {
         }
     }
 
+    @Scheduled(cron = "0 0 9 * * ?")
+    public void sendUpcomingTrainingReminders() {
+        try {
+            LocalDate threeDaysLater = LocalDate.now().plusDays(3);
+            List<EmployeeTraining> upcomingTrainings = employeeTrainingRepository
+                    .findByStatusAndTrainingProgram_StartDate(TrainingStatus.ENROLLED, threeDaysLater);
 
+            if (!upcomingTrainings.isEmpty()) {
+                List<CreateNotificationDto> notifications = upcomingTrainings.stream()
+                        .map(et -> CreateNotificationDto.builder()
+                                .recipientId(et.getEmployee().getUser().getId())
+                                .title("Upcoming Training Reminder")
+                                .message(String.format("Your training '%s' is scheduled in 3 days on %s at %s",
+                                        et.getTrainingProgram().getTitle(),
+                                        et.getTrainingProgram().getStartDate(),
+                                        et.getTrainingProgram().getLocation()))
+                                .type(NotificationType.TRAINING_REMINDER)
+                                .priority(NotificationPriority.MEDIUM)
+                                .actionUrl("/my-trainings")
+                                .build())
+                        .collect(Collectors.toList());
+
+                notificationService.sendBulkNotifications(notifications);
+                log.info("Sent {} upcoming training reminders", notifications.size());
+            }
+        } catch (Exception e) {
+            log.error("Failed to send training reminders: {}", e.getMessage());
+            throw new NotificationException("Failed to send training reminders", e);
+        }
+    }
+
+    // Daily at 10 AM - Feedback requests for completed trainings
+    @Scheduled(cron = "0 0 10 * * ?")
+    public void sendTrainingFeedbackRequests() {
+        try {
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            List<EmployeeTraining> completedTrainings = employeeTrainingRepository
+                    .findByStatusAndCompletionDateAndFeedbackSubmittedFalse(
+                            TrainingStatus.COMPLETED, yesterday);
+
+            if (!completedTrainings.isEmpty()) {
+                List<CreateNotificationDto> notifications = completedTrainings.stream()
+                        .map(et -> CreateNotificationDto.builder()
+                                .recipientId(et.getEmployee().getUser().getId())
+                                .title("Training Feedback Request")
+                                .message(String.format("Please provide feedback for your completed training '%s'",
+                                        et.getTrainingProgram().getTitle()))
+                                .type(NotificationType.TRAINING_FEEDBACK_REQUEST)
+                                .priority(NotificationPriority.MEDIUM)
+                                .actionUrl("/training-feedback/" + et.getId())
+                                .build())
+                        .collect(Collectors.toList());
+
+                notificationService.sendBulkNotifications(notifications);
+                log.info("Sent {} training feedback requests", notifications.size());
+            }
+        } catch (Exception e) {
+            log.error("Failed to send training feedback requests: {}", e.getMessage());
+            throw new NotificationException("Failed to send training feedback requests", e);
+        }
+    }
+
+    // Daily at 11 AM - Notify HR about mandatory training compliance
+    @Scheduled(cron = "0 0 11 * * ?")
+    public void sendMandatoryTrainingComplianceReport() {
+        try {
+            List<EmployeeTraining> incompleteMandatoryTrainings = employeeTrainingRepository
+                    .findByTrainingProgram_MandatoryAndStatusNot(true, TrainingStatus.COMPLETED);
+
+            if (!incompleteMandatoryTrainings.isEmpty()) {
+                List<User> hrUsers = userRepository.findAllHrAndAdminUsers();
+                if (hrUsers.isEmpty()) {
+                    throw new NotificationException("No HR users found to send training compliance report");
+                }
+
+                String message = String.format(
+                        "There are %d incomplete mandatory trainings:\n%s",
+                        incompleteMandatoryTrainings.size(),
+                        incompleteMandatoryTrainings.stream()
+                                .map(et -> String.format("- %s: %s (%s)",
+                                        et.getEmployee().getName(),
+                                        et.getTrainingProgram().getTitle(),
+                                        et.getStatus()))
+                                .collect(Collectors.joining("\n"))
+                );
+
+                List<CreateNotificationDto> notifications = hrUsers.stream()
+                        .map(user -> CreateNotificationDto.builder()
+                                .recipientId(user.getId())
+                                .title("Mandatory Training Compliance Report")
+                                .message(message)
+                                .type(NotificationType.TRAINING_REMINDER)
+                                .priority(NotificationPriority.HIGH)
+                                .actionUrl("/training-compliance")
+                                .build())
+                        .collect(Collectors.toList());
+
+                notificationService.sendBulkNotifications(notifications);
+                log.info("Sent training compliance report to {} HR users", hrUsers.size());
+            }
+        } catch (Exception e) {
+            log.error("Failed to send training compliance report: {}", e.getMessage());
+            throw new NotificationException("Failed to send training compliance report", e);
+        }
+    }
 }
