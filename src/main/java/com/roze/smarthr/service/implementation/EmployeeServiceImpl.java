@@ -32,6 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeLeaveBalanceRepository employeeLeaveBalanceRepository;
 
     @Override
+    @Transactional
     public EmployeeResponse createEmployee(EmployeeRequest request) {
         if (employeeRepository.existsByUserId(request.getUserId())) {
             throw new DuplicateResourceException("Employee already exists with user id: " + request.getUserId());

@@ -11,6 +11,9 @@ import com.roze.smarthr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class EmployeeMapper {
@@ -46,5 +49,11 @@ public class EmployeeMapper {
                 .userId(employee.getUser().getId())
                 .userEmail(employee.getUser().getEmail())
                 .build();
+    }
+
+    public Set<EmployeeResponse> toEmployeeResponseSet(Set<Employee> employees) {
+        return employees.stream()
+                .map(this::toDto)
+                .collect(Collectors.toSet());
     }
 }

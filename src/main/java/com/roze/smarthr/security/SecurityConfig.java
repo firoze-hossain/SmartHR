@@ -38,7 +38,8 @@ public class SecurityConfig {
                         "/configuration/security",
                         "/swagger-ui/**",
                         "/webjars/**",
-                        "/swagger-ui.html").permitAll().
+                        "/swagger-ui.html",
+                        "/ws-notifications/**").permitAll().
                         anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
