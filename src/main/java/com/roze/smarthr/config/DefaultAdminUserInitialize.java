@@ -45,6 +45,8 @@ public class DefaultAdminUserInitialize {
         createRoleIfNotExist("ADMIN");
         createRoleIfNotExist("HR");
         createRoleIfNotExist("EMPLOYEE");
+        createRoleIfNotExist("CANDIDATE");
+        createRoleIfNotExist("INTERVIEWER");
     }
 
     private void createRoleIfNotExist(String roleName) {

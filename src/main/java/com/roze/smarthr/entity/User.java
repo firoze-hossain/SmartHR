@@ -38,6 +38,9 @@ public class User implements UserDetails, Principal {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Employee employee;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Candidate candidate;
+
     @Override
     public String getName() {
         return username;
@@ -80,6 +83,7 @@ public class User implements UserDetails, Principal {
     public boolean isEnabled() {
         return enabled;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
