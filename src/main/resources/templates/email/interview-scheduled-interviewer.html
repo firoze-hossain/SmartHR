@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview Scheduled (Interviewer)</title>
+    <style>
+        /* Same styles as candidate template */
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 th:text="${interviewType} + ' Interview Scheduled'">Interview Scheduled</h1>
+    </div>
+    <div class="content">
+        <p>Dear Interviewer,</p>
+        <p>You have an interview scheduled:</p>
+        <p><strong>Date:</strong> <span th:text="${interviewDate}"></span></p>
+        <p><strong>Time:</strong> <span th:text="${interviewTime}"></span></p>
+        <p><strong>Type:</strong> <span th:text="${interviewType}"></span></p>
+        <p>Please join using the following link:</p>
+        <p>
+            <a th:href="${meetingLink}" class="button">Join Interview</a>
+        </p>
+
+        <p>Please review the candidate's profile before the interview.</p>
+        <p th:if="${interviewType == 'TECHNICAL'}">
+            <strong>Note:</strong> This is a technical interview. Please prepare relevant questions.
+        </p>
+    </div>
+    <div class="calendar-actions" th:if="${calendarEventLink != null}">
+        <p>
+            <a th:href="${calendarEventLink}" class="button">Add to Google Calendar</a>
+        </p>
+        <p>Or download the event: <a th:href="${calendarEventLink + '&export=1'}">Download .ics file</a></p>
+    </div>
+    <div class="footer">
+        <p>Best regards,<br>The SmartHR Team</p>
+    </div>
+</div>
+</body>
+</html>

@@ -151,6 +151,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(CalendarIntegrationException.class)
+    public ResponseEntity<ErrorResponse> handleCalendarIntegrationException(
+            CalendarIntegrationException ex,
+            WebRequest request) {
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage(),
+                null);
+
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     public static class ErrorResponse {
         private LocalDateTime timestamp;
         private int status;

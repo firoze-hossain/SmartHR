@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -60,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Role candidateRole = roleRepository.findByTitle(roleName.toUpperCase())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
-        user.setRoles(List.of(candidateRole));
+        user.setRoles(new ArrayList<>(List.of(candidateRole)));
         user.setEnabled(true);
 
         return userRepository.save(user);
