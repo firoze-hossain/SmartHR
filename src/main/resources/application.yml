@@ -23,3 +23,39 @@ application:
       expiration: 8640000
       refresh-token:
         expiration: 604800000
+
+smart-hr:
+  email:
+    from: rozexen7@gmail.com  # Must match your Gmail username
+    admin-email: rozexen7@gmail.com
+    password-reset-url: ${SMART_HR_BASE_URL}/reset-password
+    account-activation-url: ${SMART_HR_BASE_URL}/activate-account
+    base-url: http://localhost:8085  # Or your production URL
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}  # Your Gmail address (rozexen7@gmail.com)
+    password: ${EMAIL_PASSWORD}  # Your Gmail password or app password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: true
+
+#google:
+#  calendar:
+#    application.name: SmartHR  # Your application name
+#    api.key: ${GOOGLE_CALENDAR_API_KEY}
+
+google:
+  calendar:
+    application.name: SmartHR
+    client.id: ${GOOGLE_CLIENT_ID}
+    client.secret: ${GOOGLE_CLIENT_SECRET}
+    redirect.uri: http://localhost:8085/api/v1/calendar/oauth2callback
+    scopes: https://www.googleapis.com/auth/calendar
+    tokens.directory: ./tokens
