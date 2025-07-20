@@ -1,6 +1,7 @@
 package com.roze.smarthr.utils;
 
 
+import com.roze.smarthr.config.SmartHrProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
     private final EmailConfigProperties emailConfig;
-
+    private final SmartHrProperties smartHrProperties;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("hh:mm a");
 
@@ -143,6 +144,7 @@ public class EmailServiceImpl implements EmailService {
         Context context = new Context(Locale.getDefault());
         context.setVariable("taskName", taskName);
         context.setVariable("deadline", deadline.format(DATE_FORMATTER));
+        context.setVariable("baseUrl", smartHrProperties.getBaseUrl()); // Add this line
 
         String subject = "New Onboarding Task Assigned: " + taskName;
         String template = "email/onboarding-task-assignment";
