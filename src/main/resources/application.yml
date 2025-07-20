@@ -23,8 +23,12 @@ application:
       expiration: 8640000
       refresh-token:
         expiration: 604800000
+  file:
+    storage:
+      path: ./offer-letters
 
 smart-hr:
+  base-url: http://localhost:8085
   email:
     from: rozexen7@gmail.com  # Must match your Gmail username
     admin-email: rozexen7@gmail.com

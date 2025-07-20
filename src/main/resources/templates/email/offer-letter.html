@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Offer Letter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>Your Offer Letter</h1>
+<p>Dear Candidate,</p>
+<p>Please find your offer letter attached to this email.</p>
+<p>You can also download it here:</p>
+<p>
+    <a th:href="${documentUrl}" class="button">Download Offer Letter</a>
+</p>
+<p>Best regards,<br>HR Team</p>
+</body>
+</html>

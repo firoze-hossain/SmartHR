@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request.requestMatchers(
                         "/users/auth/authenticate",
                         "/candidates/create",
+                        "/files/**",
                         "/v2/api-docs",
                         "/v3/api-docs",
                         "/v3/api-docs/**",

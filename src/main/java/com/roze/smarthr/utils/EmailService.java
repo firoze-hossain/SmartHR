@@ -12,7 +12,7 @@ public interface EmailService {
     void sendInterviewResultEmail(String candidateEmail, String result, String feedback);
 
     // Offer letter emails
-    void sendOfferLetterEmail(String candidateEmail, String documentUrl);
+    void sendOfferLetterEmail(String candidateEmail, byte[] pdfAttachment, String documentUrl);
 
     void sendOfferStatusUpdateEmail(String hrEmail, String candidateName, String newStatus);
 

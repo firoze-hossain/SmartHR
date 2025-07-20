@@ -34,7 +34,7 @@ public interface NotificationService {
 
     void sendInterviewResultNotification(String candidateEmail, String result, String feedback);
 
-    void sendOfferLetterNotification(String candidateEmail, String documentUrl);
+    void sendOfferLetterNotification(String candidateEmail, String documentUrl,byte[] pdfAttachment);
 
     void sendOnboardingTaskAssignmentNotification(String assigneeEmail, String taskName, LocalDate deadline);
 

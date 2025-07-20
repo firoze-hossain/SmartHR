@@ -157,7 +157,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void sendInterviewScheduledNotification(String candidateEmail, String interviewerEmail,
-                                                   LocalDateTime scheduledDate, String meetingLink, String interviewType,   String calendarEventId  ) {
+                                                   LocalDateTime scheduledDate, String meetingLink, String interviewType, String calendarEventId) {
         // Create notification for candidate
         User candidateUser = userRepository.findByEmail(candidateEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate user not found"));
@@ -190,8 +190,8 @@ public class NotificationServiceImpl implements NotificationService {
         // Get calendar event link if available
         String calendarEventLink = calendarIntegrationService.getCalendarEventLink(calendarEventId);
         // Send emails
-        emailService.sendInterviewScheduledEmail(candidateEmail, scheduledDate, meetingLink, interviewType, true,    calendarEventLink);
-        emailService.sendInterviewScheduledEmail(interviewerEmail, scheduledDate, meetingLink, interviewType, false,    calendarEventLink);
+        emailService.sendInterviewScheduledEmail(candidateEmail, scheduledDate, meetingLink, interviewType, true, calendarEventLink);
+        emailService.sendInterviewScheduledEmail(interviewerEmail, scheduledDate, meetingLink, interviewType, false, calendarEventLink);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void sendOfferLetterNotification(String candidateEmail, String documentUrl) {
+    public void sendOfferLetterNotification(String candidateEmail, String documentUrl, byte[] pdfAttachment) {
         User candidateUser = userRepository.findByEmail(candidateEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Candidate user not found"));
 
@@ -230,7 +230,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
         notificationRepository.save(notification);
 
-        emailService.sendOfferLetterEmail(candidateEmail, documentUrl);
+        emailService.sendOfferLetterEmail(candidateEmail, pdfAttachment, documentUrl);
     }
 
     @Override

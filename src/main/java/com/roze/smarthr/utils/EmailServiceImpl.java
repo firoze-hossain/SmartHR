@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -98,14 +99,29 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendOfferLetterEmail(String candidateEmail, String documentUrl) {
+    public void sendOfferLetterEmail(String candidateEmail, byte[] pdfAttachment, String documentUrl) {
         Context context = new Context(Locale.getDefault());
         context.setVariable("documentUrl", documentUrl);
 
-        String subject = "Your Offer Letter from SmartHR";
-        String template = "email/offer-letter";
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        sendHtmlEmail(candidateEmail, subject, template, context);
+            String htmlContent = templateEngine.process("email/offer-letter", context);
+
+            helper.setFrom(emailConfig.getFrom());
+            helper.setTo(candidateEmail);
+            helper.setSubject("Your Offer Letter from SmartHR");
+            helper.setText(htmlContent, true);
+
+            // Attach PDF
+            helper.addAttachment("Offer_Letter.pdf", new ByteArrayResource(pdfAttachment));
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            log.error("Failed to send offer letter email", e);
+            throw new RuntimeException("Email sending failed", e);
+        }
     }
 
     @Override
