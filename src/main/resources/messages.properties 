@@ -1,0 +1,4 @@
+welcome.message=Welcome to SmartHR
+login.title=Login
+error.not.found=Resource not found
+error.unauthorized=Unauthorized access
